@@ -50,7 +50,7 @@ bash "build php" do
   code <<-EOF
   tar -zxvf php-#{version}.tar.gz
   (cd php-#{version} && ./configure #{configure_options})
-  (cd php-#{version} && make && make install)
+  (cd php-#{version} && make -j #{node['cpu']['total']} && make install)
   EOF
   not_if "which php"
 end
