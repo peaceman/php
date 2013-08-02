@@ -52,7 +52,7 @@ bash "build php" do
   (cd php-#{version} && ./configure #{configure_options})
   (cd php-#{version} && make -j #{node['cpu']['total']} && make install)
   EOF
-  not_if "which php | grep #{version}"
+  not_if "php --version | grep #{version}"
 end
 
 directory node['php']['conf_dir'] do
