@@ -42,7 +42,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/php-#{version}.tar.gz" do
   source "#{node['php']['url']}/php-#{version}.tar.gz"
   checksum node['php']['checksum']
   mode "0644"
-  not_if "which php | grep #{version}"
+  not_if "php --version | grep #{version}"
 end
 
 bash "build php" do
