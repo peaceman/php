@@ -1,66 +1,45 @@
----
-driver_plugin: vagrant
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
 platforms:
-- name: ubuntu-12.04
-  driver_config:
-    box: opscode-ubuntu-12.04
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
-    require_chef_omnibus: true
-    customize:
-      memory: 1024
-  run_list:
-  - recipe[apt]
-- name: ubuntu-10.04
-  driver_config:
-    box: opscode-ubuntu-10.04
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
-    require_chef_omnibus: true
-    customize:
-      memory: 1024
-  run_list:
-  - recipe[apt]
-- name: centos-6.4
-  driver_config:
-    box: opscode-centos-6.4
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
-    require_chef_omnibus: true
-    customize:
-      memory: 1024
-  run_list:
-  - recipe[yum::epel]
-- name: centos-5.9
-  driver_config:
-    box: opscode-centos-5.9
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-5.9_provisionerless.box
-    require_chef_omnibus: true
-    customize:
-      memory: 1024
-  run_list:
-  - recipe[yum::epel]
+  - name: centos-5.11
+  - name: centos-6.7
+  - name: centos-7.2
+  - name: debian-7.10
+    run_list: apt::default
+  - name: debian-8.4
+    run_list: apt::default
+  - name: fedora-23
+    run_list: yum::dnf_yum_compat
+  - name: ubuntu-12.04
+    run_list: apt::default
+  - name: ubuntu-14.04
+    run_list: apt::default
+  - name: ubuntu-16.04
+    run_list: apt::default
+  - name: freebsd-10.1
+    driver:
+      ssh:
+        shell: '"/bin/sh"'
+  - name: windows-2008r2
+    driver_config:
+      box: chef/windows-server-2008r2-standard
+  - name: windows-2012r2
+    driver_config:
+      box: chef/windows-server-2012r2-standard
 
 suites:
-- name: default
-  run_list:
-  - recipe[php]
-  attributes: {}
-
-- name: source
-  run_list:
-  - recipe[php]
-  attributes:
-    php:
-      install_method: source
-
-- name: module-packages
-  run_list:
-  - recipe[php]
-  - recipe[php::module_apc]
-  - recipe[php::module_curl]
-  - recipe[php::module_fpdf]
-  - recipe[php::module_gd]
-  - recipe[php::module_ldap]
-  - recipe[php::module_memcache]
-  - recipe[php::module_mysql]
-  - recipe[php::module_pgsql]
-  - recipe[php::module_sqlite3]
-  attributes: {}
+  - name: package_install
+    run_list:
+      - recipe[php::default]
+  - name: source_install
+    run_list:
+      - recipe[php::default]
+    attributes: { php: { install_method: "source" } }
+  - name: resource_test
+    run_list:
+      - recipe[php::default]
+      - recipe[php_test::default]
